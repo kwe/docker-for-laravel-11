@@ -49,6 +49,10 @@ RUN touch /var/www/html/database/database.sqlite \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
 
+RUN php artisan event:cache
+RUN php artisan config:cache
+RUN php artisan route:cache
+
 # Expose port 80 for HTTP
 EXPOSE 8000
 RUN chown -R www-data:www-data /var/www/html \
