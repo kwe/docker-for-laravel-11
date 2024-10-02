@@ -14,7 +14,6 @@ docker-compose.yml
 /public/storage
 /storage/*.key
 /vendor
-.env
 .env.backup
 .env.example
 .phpunit.result.cache
