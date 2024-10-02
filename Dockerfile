@@ -35,7 +35,12 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install opcache \
     && docker-php-ext-enable opcache
 
-RUN sed -i 's/listen = \/run\/php\/php-fpm.sock/listen = 9000/g' /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /var/run/php && \
+    chown www-data:www-data /var/run/php
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = \/var\/run\/php\/php-fpm.sock/g' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/;listen.owner = www-data/listen.owner = www-data/g' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/;listen.group = www-data/listen.group = www-data/g' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/;listen.mode = 0660/listen.mode = 0660/g' /usr/local/etc/php-fpm.d/www.conf
 
 # Copy the application and vendor directory from the build stage
 COPY --from=build /app /var/www/html
@@ -54,4 +59,5 @@ EXPOSE 8000
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 # Start Nginx and PHP-FPM
+RUN chmod +x /var/www/html/entrypoint.sh
 ENTRYPOINT ["/var/www/html/entrypoint.sh"]
